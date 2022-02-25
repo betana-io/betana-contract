@@ -20,6 +20,63 @@ use {
 pub struct Processor;
 impl Processor {
 
+    /// Create 3 pools - Pool A (team 1) / Pool Draw / Pool B (team 2)
+    pub fn create_stake_pool() -> ProgramResult {
+        ///   Initializes a new StakePool.
+        ///
+        ///   0. `[w]` New StakePool to create.
+        ///   1. `[s]` Manager
+        ///   2. `[]` Staker
+        ///   3. `[]` Stake pool withdraw authority
+        ///   4. `[w]` Uninitialized validator stake list storage account
+        ///   5. `[]` Reserve stake account must be initialized, have zero balance,
+        ///       and staker / withdrawer authority set to pool withdraw authority.
+        ///   6. `[]` Pool token mint. Must have zero supply, owned by withdraw authority.
+        ///   7. `[]` Pool account to deposit the generated fee for manager.
+        ///   8. `[]` Token program id
+        ///   9. `[]` (Optional) Deposit authority that must sign all deposits.
+        ///      Defaults to the program address generated using
+        ///      `find_deposit_authority_program_address`, making deposits permissionless.
+
+        // call initialize() from solana_program to Initialize a new StakePool
+            
+        // call add_validator_to_pool() from solana_program
+
+        // emit StakePool event
+
+        Ok(())
+    }
+
+    /// Bet added in the common match pool
+    pub fn deposit_bet() -> ProgramResult {
+        // call deposit_stake() (for stake account) or deposit_stake_with_authority() (for private pool) or deposit_sol() or deposit_sol_with_authority() from solana_program
+
+        // emit DepositBet event
+
+        Ok(())
+    }
+
+    /// Calculate the different rewards for a match 
+    pub fn calculate_rewards() -> ProgramResult {
+
+        Ok(())
+    }
+
+    /// Claim reward at the end of the match
+    pub fn withdraw_rewards() -> ProgramResult {
+        // call withdraw_sol() from solana_program
+
+        // emit RewardsWithdraw event
+
+        Ok(())
+    }
+
+    /// Show the amount of the total pool
+    pub fn get_stake_pool_balance() -> ProgramResult {
+
+        Ok(())
+    }
+    
     /// Processes [Instruction]
     ///
     /// 0. `[]` Program id of the currently executing program
