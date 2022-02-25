@@ -23,7 +23,6 @@ pub enum StakePoolError {
     // The reward's calcul has failed.
     #[error("CalculateRewardFailed")]
     CalculateRewardFailed
-
 }
 
 /// Convert StakePoolError into a ProgramError
