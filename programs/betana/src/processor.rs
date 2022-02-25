@@ -21,7 +21,7 @@ pub struct Processor;
 impl Processor {
 
     /// Create 3 pools - Pool A (team 1) / Pool Draw / Pool B (team 2)
-    pub fn create_stake_pool() -> ProgramResult {
+    fn create_stake_pool() -> ProgramResult {
         ///   Initializes a new StakePool.
         ///
         ///   0. `[w]` New StakePool to create.
@@ -48,7 +48,7 @@ impl Processor {
     }
 
     /// Bet added in the common match pool
-    pub fn deposit_bet() -> ProgramResult {
+    fn deposit_bet() -> ProgramResult {
         // call deposit_stake() (for stake account) or deposit_stake_with_authority() (for private pool) or deposit_sol() or deposit_sol_with_authority() from solana_program
 
         // emit DepositBet event
@@ -57,13 +57,13 @@ impl Processor {
     }
 
     /// Calculate the different rewards for a match 
-    pub fn calculate_rewards() -> ProgramResult {
+    fn calculate_rewards() -> ProgramResult {
 
         Ok(())
     }
 
     /// Claim reward at the end of the match
-    pub fn withdraw_rewards() -> ProgramResult {
+    fn withdraw_rewards() -> ProgramResult {
         // call withdraw_sol() from solana_program
 
         // emit RewardsWithdraw event
@@ -72,20 +72,20 @@ impl Processor {
     }
 
     /// Show the amount of the total pool
-    pub fn get_stake_pool_balance() -> ProgramResult {
+    fn get_stake_pool_balance() -> ProgramResult {
 
         Ok(())
     }
-    
+
     /// Processes [Instruction]
     ///
     /// 0. `[]` Program id of the currently executing program
     /// 1. `[]` Account because Solana programs are stateless
     /// 2. `[]` Data passed to the program by the caller, it could be anything
-    pub fn process(program_id: &Pubkey, accounts: &[AccountInfo], instruction_data: input: &[u8]) -> ProgramResult {
+    pub fn process(program_id: &Pubkey, accounts: &[AccountInfo], instruction_data: &[u8]) -> ProgramResult {
         // Deserialize this instance from a slice of bytes.
         // Unpacks a byte buffer into a [StakePoolInstruction](enum.StakePoolInstruction.html).
-        let instruction = StakePoolInstruction::try_from_slice(input)?;
+        let instruction = StakePoolInstruction::try_from_slice(instruction_data)?;
         match instruction {
             StakePoolInstruction::InitializePool => {
                 msg!("Instruction: InitializePool");
