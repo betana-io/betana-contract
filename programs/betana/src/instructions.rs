@@ -3,8 +3,8 @@ pub enum StakePoolInstruction {
     ///
     /// 0. `[]` Identifier of the match
     InitializePool,
-    
-    /// Add a bet in the common match pool  
+
+    /// Add a bet in the common match pool.
     ///
     /// 0. `[]` Amount that you want to bet for the match
     /// 1. `[]` Identifier of the match
