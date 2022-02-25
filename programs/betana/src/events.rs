@@ -8,6 +8,6 @@ pub struct StakePool {}
 #[event]
 pub struct DepositBet {}
 
-/// Emitted when a Rewards has been Withdraw.
+/// Emitted when a Rewards has been Withdraw
 #[event]
 pub struct RewardsWithdraw {}
