@@ -20,7 +20,7 @@ pub enum StakePoolError {
     #[error("InvalidClaim")]
     InvalidClaim,
 
-    // The reward's calcul has failed
+    // The reward's calcul has failed.
     #[error("CalculateRewardFailed")]
     CalculateRewardFailed
 
