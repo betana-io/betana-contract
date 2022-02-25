@@ -108,3 +108,31 @@ pub fn unpack<T>(input: &[u8]) -> Result<&T, ProgramError> {
     let val: &T = unsafe { &*(&input[1] as *const u8 as *const T) };
     Ok(val)
 }
+
+/// Creates an 'initialize' instruction.
+pub fn initialize(
+    program_id: &Pubkey,
+    stake_pool: &Pubkey,
+    manager: &Pubkey,
+    validator_stake_list: &Pubkey,
+    pool_mint: &Pubkey,
+    manager_pool_account: &Pubkey,
+    token_program_id: &Pubkey,
+    init_args: InitArgs,
+) -> Result<Instruction, ProgramError> {
+    let init_data = StakePoolInstruction::Initialize(init_args);
+    let data = init_data.serialize()?;
+    let accounts = vec![
+        AccountMeta::new(*stake_pool, false),
+        AccountMeta::new_readonly(*manager, true),
+        AccountMeta::new(*validator_stake_list, false),
+        AccountMeta::new(*pool_mint, false),
+        AccountMeta::new_readonly(*token_program_id, false),
+    ];
+
+    Ok(Instruction {
+        program_id: *program_id,
+        accounts,
+        data,
+    })
+}
