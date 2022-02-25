@@ -4,9 +4,7 @@ use {
         instruction::StakePoolInstruction,
         error::StakePoolError
     },
-    spl_stake_pool::{
-        instruction::{initialize}
-    },
+    spl_stake_pool::{},
     borsh::{BorshDeserialize, BorshSerialize},
     num_traits::FromPrimitive,
     solana_program::{
@@ -14,6 +12,11 @@ use {
         decode_error::DecodeError,
         program_error::PrintProgramError,
         pubkey::Pubkey
+    },
+    spl_stake_pool::{
+        instruction::{
+            initialize
+        }
     }
 };
 
@@ -22,21 +25,21 @@ impl Processor {
 
     /// Create 3 pools - Pool A (team 1) / Pool Draw / Pool B (team 2)
     fn create_stake_pool() -> ProgramResult {
-        ///   Initializes a new StakePool.
-        ///
-        ///   0. `[w]` New StakePool to create.
-        ///   1. `[s]` Manager
-        ///   2. `[]` Staker
-        ///   3. `[]` Stake pool withdraw authority
-        ///   4. `[w]` Uninitialized validator stake list storage account
-        ///   5. `[]` Reserve stake account must be initialized, have zero balance,
-        ///       and staker / withdrawer authority set to pool withdraw authority.
-        ///   6. `[]` Pool token mint. Must have zero supply, owned by withdraw authority.
-        ///   7. `[]` Pool account to deposit the generated fee for manager.
-        ///   8. `[]` Token program id
-        ///   9. `[]` (Optional) Deposit authority that must sign all deposits.
-        ///      Defaults to the program address generated using
-        ///      `find_deposit_authority_program_address`, making deposits permissionless.
+        //   Initializes a new StakePool.
+        //
+        //   0. `[w]` New StakePool to create.
+        //   1. `[s]` Manager
+        //   2. `[]` Staker
+        //   3. `[]` Stake pool withdraw authority
+        //   4. `[w]` Uninitialized validator stake list storage account
+        //   5. `[]` Reserve stake account must be initialized, have zero balance,
+        //       and staker / withdrawer authority set to pool withdraw authority.
+        //   6. `[]` Pool token mint. Must have zero supply, owned by withdraw authority.
+        //   7. `[]` Pool account to deposit the generated fee for manager.
+        //   8. `[]` Token program id
+        //   9. `[]` (Optional) Deposit authority that must sign all deposits.
+        //      Defaults to the program address generated using
+        //      `find_deposit_authority_program_address`, making deposits permissionless.
 
         // call initialize() from solana_program to Initialize a new StakePool
             
@@ -85,10 +88,10 @@ impl Processor {
     pub fn process(program_id: &Pubkey, accounts: &[AccountInfo], instruction_data: &[u8]) -> ProgramResult {
         // Deserialize this instance from a slice of bytes.
         // Unpacks a byte buffer into a [StakePoolInstruction](enum.StakePoolInstruction.html).
-        let instruction = StakePoolInstruction::try_from_slice(instruction_data)?;
+        let instruction = StakePoolInstruction::deserialize(instruction_data)?;
         match instruction {
-            StakePoolInstruction::InitializePool => {
-                msg!("Instruction: InitializePool");
+            StakePoolInstruction::Initialize(init) => {
+                msg!("Instruction: Initialize");
                 Self::create_stake_pool()
             }
             StakePoolInstruction::DepositBet => {
