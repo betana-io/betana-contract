@@ -24,22 +24,11 @@ pub struct Processor;
 impl Processor {
 
     /// Create 3 pools - Pool A (team 1) / Pool Draw / Pool B (team 2)
-    fn create_stake_pool() -> ProgramResult {
-        //   Initializes a new StakePool.
-        //
-        //   0. `[w]` New StakePool to create.
-        //   1. `[s]` Manager
-        //   2. `[]` Staker
-        //   3. `[]` Stake pool withdraw authority
-        //   4. `[w]` Uninitialized validator stake list storage account
-        //   5. `[]` Reserve stake account must be initialized, have zero balance,
-        //       and staker / withdrawer authority set to pool withdraw authority.
-        //   6. `[]` Pool token mint. Must have zero supply, owned by withdraw authority.
-        //   7. `[]` Pool account to deposit the generated fee for manager.
-        //   8. `[]` Token program id
-        //   9. `[]` (Optional) Deposit authority that must sign all deposits.
-        //      Defaults to the program address generated using
-        //      `find_deposit_authority_program_address`, making deposits permissionless.
+    fn setup_stake_pool(
+        program_id: &Pubkey,
+        init: InitArgs,
+        accounts: &[AccountInfo]
+    ) -> ProgramResult {
 
         // call initialize() from solana_program to Initialize a new StakePool
             
@@ -92,7 +81,7 @@ impl Processor {
         match instruction {
             StakePoolInstruction::Initialize(init) => {
                 msg!("Instruction: Initialize");
-                Self::create_stake_pool()
+                Self::setup_stake_pool()
             }
             StakePoolInstruction::DepositBet => {
                 msg!("Instruction: DepositBet");
