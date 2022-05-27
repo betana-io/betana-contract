@@ -4,6 +4,14 @@ use solana_program::program_error::ProgramError;
 
 #[derive(Error, Debug, Copy, Clone)]
 pub enum StakePoolError {
+    /// The account cannot be initialized because it is already being used.
+    #[error("AlreadyInUse")]
+    AlreadyInUse,
+
+    /// Required signature is missing
+    #[error("SignatureMissing")]
+    SignatureMissing,
+
     /// It's too late to add your bet in this pool because the game will start soon.
     #[error("PoolStateClose")]
     PoolStateClose,
