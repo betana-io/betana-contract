@@ -11,7 +11,9 @@ use {
         account_info::AccountInfo,
         decode_error::DecodeError,
         program_error::PrintProgramError,
-        pubkey::Pubkey
+        pubkey::Pubkey,
+        clock::Clock,
+        rent::Rent
     },
     spl_stake_pool::{
         instruction::{
@@ -23,19 +25,58 @@ use {
 pub struct Processor;
 impl Processor {
 
-    /// Create 3 pools - Pool A (team 1) / Pool Draw / Pool B (team 2)
-    fn setup_stake_pool(
+    fn process_setup_stake_pool(
         program_id: &Pubkey,
         init: InitArgs,
         accounts: &[AccountInfo]
     ) -> ProgramResult {
+        let account_info_iter = &mut accounts.iter();
 
-        // call initialize() from solana_program to Initialize a new StakePool
-            
+        let stake_pool_info = next_account_info(account_info_iter)?;
+        let owner_info = next_account_info(account_info_iter)?;
+        let validator_stake_list_info = next_account_info(account_info_iter)?;
+        let pool_mint_info = next_account_info(account_info_iter)?;
+        let owner_fee_info = next_account_info(account_info_iter)?;
+        // Clock sysvar account
+        let clock_info = next_account_info(account_info_iter)?;
+        let clock = &Clock::from_account_info(clock_info)?;
+        // Rent sysvar account
+        let rent_info = next_account_info(account_info_iter)?;
+        let rent = &Rent::from_account_info(rent_info)?;
+        // Token program id
+        let token_program_id = next_account_info(account_info_iter)?;
+
+        // Check if tx was signed by owner
+        if !owner_info.is_signer {
+            return Err(StakePoolError::SignatureMissing.into());
+        }
+
+        let mut stake_pool = StakePoolInstruction::deserialize(&stake_pool_info.data.borrow())?;
+        if stake_pool.is_initialized() {
+            return Err(StakePoolError::AlreadyInUse.into());
+        }
+
+        
         // call add_validator_to_pool() from solana_program
 
         // emit StakePool event
 
+        Ok(())
+    }
+
+    fn process_create_validator_stake_account(
+        program_id: &Pubkey,
+        accounts: &[AccountInfo]
+    ) -> ProgramResult {
+        
+        Ok(())
+    }
+
+    fn process_add_validator_stake_account(
+        program_id: &Pubkey,
+        accounts: &[AccountInfo]
+    ) -> ProgramResult {
+        
         Ok(())
     }
 
@@ -55,7 +96,7 @@ impl Processor {
     }
 
     /// Claim reward at the end of the match
-    fn withdraw_rewards() -> ProgramResult {
+    fn claim_rewards() -> ProgramResult {
         // call withdraw_sol() from solana_program
 
         // emit RewardsWithdraw event
@@ -81,15 +122,19 @@ impl Processor {
         match instruction {
             StakePoolInstruction::Initialize(init) => {
                 msg!("Instruction: Initialize");
-                Self::setup_stake_pool()
+                Self::process_setup_stake_pool()
             }
             StakePoolInstruction::DepositBet => {
                 msg!("Instruction: DepositBet");
                 Self::deposit_bet()
             }
+            StakePoolInstruction::ClaimRewards => {
+                msg!("Instruction: ClaimRewards");
+                Self::claim_rewards()
+            }
             StakePoolInstruction::CalculateRewards => {
                 msg!("Instruction: CalculateRewards");
-                Self::withdraw_rewards()
+                Self::calculate_rewards()
             }
             StakePoolInstruction::GetPoolBalance => {
                 msg!("Instruction: GetPoolBalance");
@@ -106,6 +151,8 @@ impl PrintProgramError for StakePoolError {
         E: 'static + std::error::Error + DecodeError<E> + PrintProgramError + FromPrimitive,
     {
         match self {
+            StakePoolError::AlreadyInUse => msg!("Error: The account cannot be initialized because it is already being used."),
+            StakePoolError::SignatureMissing => msg!("Error: Required signature is missing."),
             StakePoolError::PoolStateClose => msg!("Error: It's too late to add your bet in this pool because the game will start soon."),
             StakePoolError::PoolNotExist => msg!("Error: Invalide pool address."),
             StakePoolError::Deposit => msg!("Error: You don't have enough money in your wallet."),
