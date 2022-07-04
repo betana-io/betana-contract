@@ -1,7 +1,7 @@
 use {
     anchor_lang::prelude::*,
     crate::{
-        instruction::StakePoolInstruction,
+        instruction::{InitArgs,StakePoolInstruction},
         error::StakePoolError
     },
     spl_stake_pool::{},
@@ -52,9 +52,9 @@ impl Processor {
         }
 
         let mut stake_pool = StakePoolInstruction::deserialize(&stake_pool_info.data.borrow())?;
-        if stake_pool.is_initialized() {
+        /*if stake_pool.is_initialized() {
             return Err(StakePoolError::AlreadyInUse.into());
-        }
+        }*/
 
         
         // call add_validator_to_pool() from solana_program
@@ -81,7 +81,10 @@ impl Processor {
     }
 
     /// Bet added in the common match pool
-    fn deposit_bet() -> ProgramResult {
+    fn deposit_bet(
+        program_id: &Pubkey,
+        accounts: &[AccountInfo]
+    ) -> ProgramResult {
         // call deposit_stake() (for stake account) or deposit_stake_with_authority() (for private pool) or deposit_sol() or deposit_sol_with_authority() from solana_program
 
         // emit DepositBet event
@@ -90,13 +93,20 @@ impl Processor {
     }
 
     /// Calculate the different rewards for a match 
-    fn calculate_rewards() -> ProgramResult {
+    fn calculate_rewards(
+        program_id: &Pubkey,
+        accounts: &[AccountInfo]
+    ) -> ProgramResult {
 
         Ok(())
     }
 
     /// Claim reward at the end of the match
-    fn claim_rewards() -> ProgramResult {
+    fn claim_rewards(
+        program_id: &Pubkey,
+        pool_amount: u64,
+        accounts: &[AccountInfo]
+    ) -> ProgramResult {
         // call withdraw_sol() from solana_program
 
         // emit RewardsWithdraw event
@@ -105,7 +115,10 @@ impl Processor {
     }
 
     /// Show the amount of the total pool
-    fn get_stake_pool_balance() -> ProgramResult {
+    fn get_stake_pool_balance(
+        program_id: &Pubkey,
+        accounts: &[AccountInfo]
+    ) -> ProgramResult {
 
         Ok(())
     }
@@ -122,23 +135,31 @@ impl Processor {
         match instruction {
             StakePoolInstruction::Initialize(init) => {
                 msg!("Instruction: Initialize");
-                Self::process_setup_stake_pool()
+                Self::process_setup_stake_pool(program_id, init, accounts)
             }
             StakePoolInstruction::DepositBet => {
                 msg!("Instruction: DepositBet");
-                Self::deposit_bet()
+                Self::deposit_bet(program_id, accounts)
             }
-            StakePoolInstruction::ClaimRewards => {
+            StakePoolInstruction::ClaimRewards(amount) => {
                 msg!("Instruction: ClaimRewards");
-                Self::claim_rewards()
+                Self::claim_rewards(program_id, amount, accounts)
+            }
+            StakePoolInstruction::CreateValidatorStakeAccount => {
+                msg!("Instruction: CreateValidatorStakeAccount");
+                Self::process_create_validator_stake_account(program_id, accounts)
+            }
+            StakePoolInstruction::AddValidatorStakeAccount => {
+                msg!("Instruction: DepositBet");
+                Self::process_add_validator_stake_account(program_id, accounts)
             }
             StakePoolInstruction::CalculateRewards => {
                 msg!("Instruction: CalculateRewards");
-                Self::calculate_rewards()
+                Self::calculate_rewards(program_id, accounts)
             }
             StakePoolInstruction::GetPoolBalance => {
                 msg!("Instruction: GetPoolBalance");
-                Self::get_stake_pool_balance()
+                Self::get_stake_pool_balance(program_id, accounts)
             }
         }
     }

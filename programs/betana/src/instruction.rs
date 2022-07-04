@@ -137,10 +137,13 @@ impl StakePoolInstruction {
                 let val: &InitArgs = unpack(input)?;
                 Self::Initialize(*val)
             },
-            1 => self::CreateValidatorStakeAccount,
-            2 => self::AddValidatorStakeAccount,
+            1 => Self::CreateValidatorStakeAccount,
+            2 => Self::AddValidatorStakeAccount,
             3 => Self::DepositBet,
-            4 => Self::ClaimRewards,
+            4 => {
+                let val: &u64 = unpack(input)?;
+                Self::ClaimRewards(*val)
+            },
             5 => Self::CalculateRewards,
             6 => Self::GetPoolBalance,
             _ => return Err(ProgramError::InvalidAccountData),
@@ -167,8 +170,11 @@ impl StakePoolInstruction {
             Self::DepositBet => {
                 output[0] = 3;
             },
-            Self::ClaimRewards => {
+            Self::ClaimRewards(val) => {
                 output[0] = 4;
+                #[allow(clippy::cast_ptr_alignment)]
+                let value = unsafe { &mut *(&mut output[1] as *mut u8 as *mut u64) };
+                *value = *val;
             },
             Self::CalculateRewards => {
                 output[0] = 5;
@@ -327,7 +333,7 @@ pub fn deposit_bet(
     Ok(Instruction {
         program_id: *program_id,
         accounts,
-        data,
+        data: StakePoolInstruction::DepositBet.serialize()?,
     })
 }
 
