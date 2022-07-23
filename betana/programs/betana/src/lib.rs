@@ -10,18 +10,23 @@ pub mod betana {
     use anchor_lang::solana_program::{program::invoke,system_instruction::transfer};
     use super::*;
 
+    pub fn initialize(ctx: Context<Initialize>) -> ProgramResult {
+        let base_account = &mut ctx.accounts.base_account;
+        Ok(())
+    }
+
     pub fn place_bet(
         ctx: Context<SendSol>, 
-        id_match: u64, 
-        id_team: u64, 
+        id_match: String, 
+        id_team: String, 
         amount: u64, 
         user_address: Pubkey
     ) -> ProgramResult {
         let base_account = &mut ctx.accounts.base_account;
 
         //Build the struct.
-        let id_match : u64 = id_match;
-        let id_team : u64 = id_team;
+        let id_match : String = id_match;
+        let id_team : String = id_team;
         let amount : u64 = amount;
 
         let bet_item = BetStruct {
@@ -56,6 +61,15 @@ pub mod betana {
 }
 
 #[derive(Accounts)]
+pub struct Initialize<'info> {
+    #[account(init, payer = user, space = 64 + 1024)]
+    pub base_account: Account<'info, BaseAccount>,
+    #[account(mut)]
+    pub user: Signer<'info>,
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
 pub struct SendSol<'info> {
     #[account(mut)]
     pub base_account: Account<'info, BaseAccount>,
@@ -68,8 +82,8 @@ pub struct SendSol<'info> {
 
 #[derive(Debug, Clone, AnchorSerialize, AnchorDeserialize)]
 pub struct BetStruct {
-    pub id_match: u64,
-    pub id_team: u64,
+    pub id_match: String,
+    pub id_team: String,
     pub amount: u64,
     pub user_address: Pubkey,
 }
