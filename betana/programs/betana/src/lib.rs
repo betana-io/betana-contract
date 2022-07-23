@@ -52,7 +52,6 @@ pub mod betana {
 
         Ok(())
     }
-
 }
 
 #[derive(Accounts)]
