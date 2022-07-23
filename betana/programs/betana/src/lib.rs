@@ -1,5 +1,5 @@
 use anchor_lang::prelude::*;
-use anchor_lang::Account;
+use anchor_lang::account;
 
 declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
 
@@ -19,9 +19,9 @@ pub mod betana {
         let base_account = &mut ctx.accounts.base_account;
 
         //Build the struct.
-        let id_match : u64 = id_match 
-        let id_team : u64 = id_team 
-        let amount : u64 = amount 
+        let id_match : u64 = id_match;
+        let id_team : u64 = id_team;
+        let amount : u64 = amount;
 
         let bet_item = BetStruct {
             id_match: id_match,
